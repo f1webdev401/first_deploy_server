@@ -206,6 +206,8 @@ try {
           secure: true,
           sameSite: 'None',
           maxAge: 1000 * 60 * 60,
+          path: '/',
+          domain: 'localhost'
      })
      return res.status(200).json('success');
  } catch (error) {
