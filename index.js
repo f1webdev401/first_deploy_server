@@ -203,7 +203,7 @@ try {
      const paymentIntent = await createPaymentIntent(data);
      const paymentBody = paymentIntent.body
      res.cookie('payment-intent',paymentIntent, {
-          secure: true,
+          secure: false,
           sameSite: 'None',
           maxAge: 1000 * 60 * 60,
           path: '/',
