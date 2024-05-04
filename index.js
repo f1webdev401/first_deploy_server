@@ -202,12 +202,12 @@ let cookie = req.cookies['payment-intent']
 try {
      const paymentIntent = await createPaymentIntent(data);
      const paymentBody = paymentIntent.body
-     res.cookie('payment-intent',paymentIntent, {
-          secure: false,
-          sameSite: 'lax',
-          maxAge: (24 * 60 * 60 * 1000) * 90,
-     })
-     return res.status(200).json('success');
+     // res.cookie('payment-intent',paymentIntent, {
+     //      secure: false,
+     //      sameSite: 'lax',
+     //      maxAge: (24 * 60 * 60 * 1000) * 90,
+     // })
+     return res.status(200).json(paymentIntent);
  } catch (error) {
      res.status(500).json({ error: error.message });
  }
