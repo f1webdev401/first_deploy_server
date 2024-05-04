@@ -197,16 +197,15 @@ app.post('/create-payment-intent',async (req,res) => {
 //     }
 //     return handler(optionIntent, res)
 let data = req.body
-console.log(data)
 let cookie = req.cookies['payment-intent']
 try {
      const paymentIntent = await createPaymentIntent(data);
      const paymentBody = paymentIntent.body
-     // res.cookie('payment-intent',paymentIntent, {
-     //      secure: false,
-     //      sameSite: 'lax',
-     //      maxAge: (24 * 60 * 60 * 1000) * 90,
-     // })
+     res.cookie('payment-intent',paymentIntent, {
+          secure: false,
+          sameSite: 'false',
+          maxAge: (24 * 60 * 60 * 1000) * 90,
+     })
      return res.status(200).json(paymentIntent);
  } catch (error) {
      res.status(500).json({ error: error.message });
@@ -230,7 +229,6 @@ app.post('/attach-intent-method',async (req,res) => {
           const month = (createdAtDate.getMonth() + 1).toString().padStart(2, '0');
           const day = createdAtDate.getDate().toString().padStart(2, '0'); 
           const year = createdAtDate.getFullYear();
-
           const formattedDate = `${month}/${day}/${year}`;
           console.log(formattedDate , 'this is the format'); 
           // res.cookie('receipt', {
