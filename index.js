@@ -166,46 +166,16 @@ async function listenToPayment (paymentIntentId,paymentIntentClientKey)  {
 //      }
 // })
 app.post('/create-payment-intent',async (req,res) => {
-//     console.log("SECRET_KEY:", process.env.SECRET_KEY);
-//     const data =  {
-//         data: {
-//              attributes: {
-//                   amount: 10000 ,
-//                   payment_method_allowed: [
-//                        "card"
-//                   ],
-//                   payment_method_options: {
-//                        card: {
-//                             "request_three_d_secure": "any"
-//                        }
-//                   },
-//                   currency: "PHP",
-//                   description: "description",
-//                   statement_descriptor: "descriptor business name"
-//              }
-//         }
-//      }
-//     const optionIntent = {
-//         method: "POST",
-//         headers:{
-//             Accept: 'application/json',
-//             "Content-Type":'application/json',
-//             Authorization: `Basic ${Buffer.from(process.env.SECRET_KEY).toString('base64')}`
-//         },
-//         body:JSON.stringify(data)
-        
-//     }
-//     return handler(optionIntent, res)
 let data = req.body
 let cookie = req.cookies['payment-intent']
 try {
      const paymentIntent = await createPaymentIntent(data);
      const paymentBody = paymentIntent.body
-     res.cookie('payment-intent',paymentIntent, {
-          secure: false,
-          sameSite: 'false',
-          maxAge: (24 * 60 * 60 * 1000) * 90,
-     })
+     // res.cookie('payment-intent',paymentIntent, {
+     //      secure: false,
+     //      sameSite: false,
+     //      maxAge: (24 * 60 * 60 * 1000) * 90,
+     // })
      return res.status(200).json(paymentIntent);
  } catch (error) {
      res.status(500).json({ error: error.message });
@@ -213,11 +183,11 @@ try {
 })
 app.post('/attach-intent-method',async (req,res) => {
      try {
-          let data ={ ... req.body}
+          let { data , paymentIntentId} ={ ... req.body}
+          console.log(paymentIntentId)
           data.data.attributes.details.exp_month = parseInt(data.data.attributes.details.exp_month)
           data.data.attributes.details.exp_year = parseInt(data.data.attributes.details.exp_year)
-          // let paymentIntent = await createPaymentIntent()
-          let paymentIntent = JSON.parse(req.cookies['payment-intent'])
+          let paymentIntent = JSON.parse(paymentIntentId)
           console.log(paymentIntent,'asad 1')
           if(!paymentIntent) {
                throw new Error("Something went wrong")
