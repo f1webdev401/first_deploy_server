@@ -9,7 +9,7 @@ const PORT = 5000
 
 
 app.use(cors({
-     origin: ['http://localhost:3000','https://f1webdev.netlify.app/'],
+     origin: ['http://localhost:3000','https://f1webdev.netlify.app/','https://f1webdev.netlify.app/myworkf1/paymentintegration'],
      credentials: true
 }))
 app.use(cookieParser())
