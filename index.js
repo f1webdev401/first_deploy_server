@@ -206,8 +206,6 @@ try {
           secure: false,
           sameSite: 'lax',
           maxAge: (24 * 60 * 60 * 1000) * 90,
-          path: '/myworkf1/paymentintegration/checkout',
-          domain: 'localhost'
      })
      return res.status(200).json('success');
  } catch (error) {
