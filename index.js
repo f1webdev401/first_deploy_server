@@ -218,17 +218,13 @@ app.post('/attach-intent-method',async (req,res) => {
           data.data.attributes.details.exp_month = parseInt(data.data.attributes.details.exp_month)
           data.data.attributes.details.exp_year = parseInt(data.data.attributes.details.exp_year)
           // let paymentIntent = await createPaymentIntent()
-          let paymentIntent = req.cookies['payment-intent']
+          let paymentIntent = JSON.parse(req.cookies['payment-intent'])
+          console.log(paymentIntent,'asad 1')
           if(!paymentIntent) {
                throw new Error("Something went wrong")
           }
           let paymentMethod = await createPaymentMethod(data)
           const attachResponse = await attachIntentMethod(paymentIntent,paymentMethod)
-          // const retrievePaymentIntent = await listenToPayment(paymentIntent.id,paymentIntent.attributes.client_key)
-          // console.log(paymentIntent.id,'paymentIntent.id')
-          // console.log(paymentIntent,'paymentIntent.client_key')
-          // console.log(retrievePaymentIntent,'retrievePaymentIntent')
-          console.log(attachResponse.attributes.payments[0].id.slice(4),'this is response')
           const  createdAt_timestamp = attachResponse.attributes.created_at
           const createdAtDate = new Date(createdAt_timestamp * 1000);
           const month = (createdAtDate.getMonth() + 1).toString().padStart(2, '0');
@@ -237,13 +233,18 @@ app.post('/attach-intent-method',async (req,res) => {
 
           const formattedDate = `${month}/${day}/${year}`;
           console.log(formattedDate , 'this is the format'); 
-          res.cookie('receipt', {
+          // res.cookie('receipt', {
+          //      email: attachResponse.attributes.payments[0].attributes.billing.email,
+          //      amount: (attachResponse.attributes.amount) / 100,
+          //      date:formattedDate,
+          //      id: attachResponse.attributes.payments[0].id.slice(4)
+          // })
+          res.status(200).json({
                email: attachResponse.attributes.payments[0].attributes.billing.email,
                amount: (attachResponse.attributes.amount) / 100,
                date:formattedDate,
                id: attachResponse.attributes.payments[0].id.slice(4)
           })
-          res.status(200).json(attachResponse)
      }catch(e) {
           console.log(JSON.parse(e.message),'this is error4')
           const statusCode = (JSON.parse(e.message)).status
