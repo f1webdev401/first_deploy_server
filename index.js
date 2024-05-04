@@ -9,7 +9,7 @@ const PORT = 5000
 
 
 app.use(cors({
-     origin: ['http://localhost:3000','https://f1webdev.netlify.app/','https://f1webdev.netlify.app/myworkf1/paymentintegration'],
+     origin: ['http://localhost:3000','https://f1webdev.netlify.app',],
      credentials: true
 }))
 app.use(cookieParser())
@@ -165,17 +165,12 @@ async function listenToPayment (paymentIntentId,paymentIntentClientKey)  {
 //           console.log(e)
 //      }
 // })
+app.options('/create-payment-intent',cors())
+app.options('/attach-intent-method',cors())
 app.post('/create-payment-intent',async (req,res) => {
 let data = req.body
-let cookie = req.cookies['payment-intent']
 try {
      const paymentIntent = await createPaymentIntent(data);
-     const paymentBody = paymentIntent.body
-     // res.cookie('payment-intent',paymentIntent, {
-     //      secure: false,
-     //      sameSite: false,
-     //      maxAge: (24 * 60 * 60 * 1000) * 90,
-     // })
      return res.status(200).json(paymentIntent);
  } catch (error) {
      res.status(500).json({ error: error.message });
@@ -184,11 +179,9 @@ try {
 app.post('/attach-intent-method',async (req,res) => {
      try {
           let { data , paymentIntentId} ={ ... req.body}
-          console.log(paymentIntentId)
           data.data.attributes.details.exp_month = parseInt(data.data.attributes.details.exp_month)
           data.data.attributes.details.exp_year = parseInt(data.data.attributes.details.exp_year)
           let paymentIntent = JSON.parse(paymentIntentId)
-          console.log(paymentIntent,'asad 1')
           if(!paymentIntent) {
                throw new Error("Something went wrong")
           }
@@ -200,13 +193,6 @@ app.post('/attach-intent-method',async (req,res) => {
           const day = createdAtDate.getDate().toString().padStart(2, '0'); 
           const year = createdAtDate.getFullYear();
           const formattedDate = `${month}/${day}/${year}`;
-          console.log(formattedDate , 'this is the format'); 
-          // res.cookie('receipt', {
-          //      email: attachResponse.attributes.payments[0].attributes.billing.email,
-          //      amount: (attachResponse.attributes.amount) / 100,
-          //      date:formattedDate,
-          //      id: attachResponse.attributes.payments[0].id.slice(4)
-          // })
           res.status(200).json({
                email: attachResponse.attributes.payments[0].attributes.billing.email,
                amount: (attachResponse.attributes.amount) / 100,
@@ -214,13 +200,9 @@ app.post('/attach-intent-method',async (req,res) => {
                id: attachResponse.attributes.payments[0].id.slice(4)
           })
      }catch(e) {
-          console.log(JSON.parse(e.message),'this is error4')
           const statusCode = (JSON.parse(e.message)).status
           return res.status(statusCode).json(JSON.parse(e.message))
-          // throw new Error(JSON.parse(e.message))
      }
-
-     // await attachIntentMethod()
 })
 
 app.get('/',(req,res) => {
