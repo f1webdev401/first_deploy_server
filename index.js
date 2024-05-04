@@ -204,9 +204,9 @@ try {
      const paymentBody = paymentIntent.body
      res.cookie('payment-intent',paymentIntent, {
           secure: false,
-          sameSite: 'None',
-          maxAge: 1000 * 60 * 60,
-          path: '/',
+          sameSite: 'lax',
+          maxAge: (24 * 60 * 60 * 1000) * 90,
+          path: '/myworkf1/paymentintegration/checkout',
           domain: 'localhost'
      })
      return res.status(200).json('success');
@@ -256,7 +256,9 @@ app.post('/attach-intent-method',async (req,res) => {
      // await attachIntentMethod()
 })
 
-
+app.get('/',(req,res) => {
+     res.send('hello world')
+})
 app.listen(PORT,() => {
     console.log('express running')
 })
