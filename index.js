@@ -9,28 +9,12 @@ const PORT = 5000
 
 
 app.use(cors({
-     origin: ['http://localhost:3000','https://f1webdev.netlify.app',],
+     origin: ['http://localhost:3000','https://f1webdev.netlify.app','https://f1webdev.tech'],
      credentials: true
 }))
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(bodyParser.json())
-const handler = async (optionsIntent , res) => {
-    try {
-        const response = await fetch("https://api.paymongo.com/v1/payment_intents", optionsIntent);
-        const responseData = await response.json();
-    
-        if (responseData.errors) {
-          console.log(JSON.stringify(responseData.errors));
-          res.status(500).json({ error: responseData.errors });
-        } else {
-          res.status(200).json({ body: responseData });
-        }
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: error.message });
-      }
-}
 const createPaymentIntent = async (data) => {
      
      const optionIntent = {
@@ -54,11 +38,9 @@ const createPaymentIntent = async (data) => {
       .catch(e => {
           return e
       })
-     //  console.log(paymentIntent)
       return paymentIntent;
 }
 const createPaymentMethod = async (data) => {
-     // try {
           try {
                const response =  fetch("https://api.paymongo.com/v1/payment_methods", {
                     method: "POST",
@@ -83,25 +65,10 @@ const createPaymentMethod = async (data) => {
                     throw new Error(JSON.stringify({error:JSON.parse(e.message),status:400})) 
                     // return e
                })
-               // const responseData =  await response
-               // if(!response.ok && responseData.errors) {
-               //  throw new Error(responseData.errors) 
-               // }
-               // console.log(responseData,'res data')
                return response
           }catch(err) {
-               // console.log(err,'this is error 2')
                throw new Error({error:err,status:400})
           }
-          // const responseData =  response.json();
-          // if(!response.ok && responseData.errors) {
-          //       throw new Error(JSON.stringify(responseData.errors)) 
-          // }
-          // return res.status(200).json({ body: responseData.data });
-     // }catch(err) {
-     //      return res.status(400).json({error:JSON.parse(err.message)})
-     // }
-     //    return paymentMethod
      
 }
 const attachIntentMethod = async (intent,method) => {
@@ -126,11 +93,6 @@ const attachIntentMethod = async (intent,method) => {
      })
      .then(res => {
           const paymentIntent = res.data
-          // const paymentIntentStatus = paymentIntent.attributes.status
-          // console.log(paymentIntent)
-          // if(paymentIntentStatus === 'awaiting_next_action') {
-          //      window.open(paymentIntent.attributes.next_action.redirect.url, "_blank")
-          // }
           return listenToPayment(intent.id,intent.attributes.client_key)
           // return res.data
      })
@@ -156,15 +118,6 @@ async function listenToPayment (paymentIntentId,paymentIntentClientKey)  {
      })
      return response
 }
-// app.post('/create-payment-method',  async (req,res) => {
-//      try {
-//           const paymentMethod = await createPaymentMethod();
-//           const paymentMethodData = paymentMethod.data
-//           res.json({ data: paymentMethod });
-//      }catch(e) {
-//           console.log(e)
-//      }
-// })
 app.options('/create-payment-intent',cors())
 app.options('/attach-intent-method',cors())
 app.post('/create-payment-intent',async (req,res) => {
