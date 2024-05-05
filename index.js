@@ -124,7 +124,7 @@ app.post('/create-payment-intent',async (req,res) => {
 let data = req.body
 try {
      const paymentIntent = await createPaymentIntent(data);
-     return res.status(200).json(paymentIntent);
+     return res.status(200).json(JSON.stringify(paymentIntent));
  } catch (error) {
      res.status(500).json({ error: error.message });
  }
